@@ -37,7 +37,9 @@ export class ArtistService {
       updatedAt: Date.now(),
     };
     this.artistsMock = this.artistsMock.map((artist: Artist) =>
-      artist.id === id ? { ...artist, ...updatedArtist } : artist,
+      artist.id === id
+        ? { ...updatedArtist, createdAt: artist.createdAt }
+        : artist,
     );
     return updatedArtist;
   }
