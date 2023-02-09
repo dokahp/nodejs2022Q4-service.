@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import { IsUUID } from 'class-validator';
 
 export class User {
