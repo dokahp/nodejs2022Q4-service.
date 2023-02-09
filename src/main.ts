@@ -16,7 +16,6 @@ async function bootstrap() {
   const apiJson = JSON.parse(
     readFileSync(`${path}/doc/api.json`, { encoding: 'utf-8' }),
   );
-  // const document = SwaggerModule.createDocument(app, config, apiJson);
   SwaggerModule.setup('doc', app, apiJson);
   await app.listen(process.env.PORT);
 }
