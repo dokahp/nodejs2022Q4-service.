@@ -9,7 +9,10 @@ export class UserService {
   usersMock: User[] = [];
 
   async getAllUsers() {
-    return this.usersMock;
+    const allUsers = this.usersMock.map(({ password: string, ...user }: User) =>
+      Object.assign(user),
+    );
+    return allUsers;
   }
 
   async getSingleUserById(id: string): Promise<User> {
@@ -17,7 +20,7 @@ export class UserService {
   }
 
   async createUser(user: CreateUserDto) {
-    const newUser = {
+    const newUser: User = {
       id: uuidv4(),
       login: user.login,
       password: user.password,
@@ -25,7 +28,8 @@ export class UserService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    this.usersMock.push(newUser);
+    this.usersMock.push({ ...newUser });
+    delete newUser.password;
     return newUser;
   }
 
@@ -34,6 +38,7 @@ export class UserService {
     if (existedUser.password !== dto.oldPassword) {
       throw new HttpException('password is wrong', HttpStatus.FORBIDDEN);
     }
+
     const newUserPassword: User = {
       ...existedUser,
       password: dto.newPassword,
@@ -41,8 +46,9 @@ export class UserService {
       updatedAt: Date.now(),
     };
     this.usersMock = this.usersMock.map((user: User) =>
-      user.id === id ? newUserPassword : user,
+      user.id === id ? { ...newUserPassword } : user,
     );
+    delete newUserPassword.password;
     return newUserPassword;
   }
 
