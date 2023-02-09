@@ -10,7 +10,7 @@ export class UserService {
 
   async getAllUsers() {
     const allUsers: Omit<User, 'password'>[] = this.usersMock.map(
-      ({ password: string, ...user }: User) => Object.assign(user),
+      ({ password, ...user }: User) => Object.assign(user),
     );
     return allUsers;
   }

@@ -29,7 +29,7 @@ export class UserController {
   @Get(':id')
   async getSingleUserById(
     @Param('id', IdValidationPipe) id: string,
-  ): Promise<User> {
+  ): Promise<Omit<User, 'password'>> {
     const user = await this.userService.getSingleUserById(id);
     if (!user) {
       throw new HttpException('error: no such user', HttpStatus.NOT_FOUND);
