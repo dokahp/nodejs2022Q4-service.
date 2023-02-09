@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './model/artist.model';
 import { v4 as uuidv4 } from 'uuid';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class ArtistService {
   artistsMock: Artist[] = [];
-
+  constructor(private readonly trackService: TrackService) {}
   async getAllArtists() {
     return this.artistsMock;
   }
@@ -48,5 +49,6 @@ export class ArtistService {
     this.artistsMock = this.artistsMock.filter(
       (artist: Artist) => artist.id !== id,
     );
+    this.trackService.artistWasDeleted(id);
   }
 }

@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './model/album.model';
 import { v4 as uuidv4 } from 'uuid';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class AlbumService {
   albumMock: Album[] = [];
+
+  constructor(private readonly trackService: TrackService) {}
 
   async getAllAlbums() {
     return this.albumMock;
@@ -47,5 +50,6 @@ export class AlbumService {
 
   async deleteAlbum(id: string) {
     this.albumMock = this.albumMock.filter((album: Album) => album.id !== id);
+    this.trackService.albumWasDeleted(id);
   }
 }
