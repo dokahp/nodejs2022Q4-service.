@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './model/artist.model';
 import { v4 as uuidv4 } from 'uuid';
 import { TrackService } from 'src/track/track.service';
+import { FavsService } from 'src/favs/favs.service';
 
 @Injectable()
 export class ArtistService {
   artistsMock: Artist[] = [];
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly favsService: FavsService,
+  ) {}
   async getAllArtists() {
     return this.artistsMock;
   }
@@ -22,8 +26,6 @@ export class ArtistService {
       id: uuidv4(),
       name,
       grammy,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
     };
     this.artistsMock.push(newArtist);
     return newArtist;
@@ -35,12 +37,9 @@ export class ArtistService {
       id,
       name,
       grammy,
-      updatedAt: Date.now(),
     };
     this.artistsMock = this.artistsMock.map((artist: Artist) =>
-      artist.id === id
-        ? { ...updatedArtist, createdAt: artist.createdAt }
-        : artist,
+      artist.id === id ? { ...updatedArtist } : artist,
     );
     return updatedArtist;
   }
@@ -50,5 +49,6 @@ export class ArtistService {
       (artist: Artist) => artist.id !== id,
     );
     this.trackService.artistWasDeleted(id);
+    this.favsService.deleteArtistFromFavs(id);
   }
 }

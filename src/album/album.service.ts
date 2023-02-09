@@ -3,12 +3,16 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './model/album.model';
 import { v4 as uuidv4 } from 'uuid';
 import { TrackService } from 'src/track/track.service';
+import { FavsService } from 'src/favs/favs.service';
 
 @Injectable()
 export class AlbumService {
   albumMock: Album[] = [];
 
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly favsService: FavsService,
+  ) {}
 
   async getAllAlbums() {
     return this.albumMock;
@@ -26,8 +30,6 @@ export class AlbumService {
       name,
       year,
       artistId,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
     };
     this.albumMock.push({ ...newAlbum });
     return newAlbum;
@@ -40,10 +42,9 @@ export class AlbumService {
       name,
       year,
       artistId,
-      updatedAt: Date.now(),
     };
     this.albumMock = this.albumMock.map((album: Album) =>
-      album.id === id ? { ...album, ...updatedAlbum } : album,
+      album.id === id ? { ...updatedAlbum } : album,
     );
     return updatedAlbum;
   }
@@ -51,5 +52,6 @@ export class AlbumService {
   async deleteAlbum(id: string) {
     this.albumMock = this.albumMock.filter((album: Album) => album.id !== id);
     this.trackService.albumWasDeleted(id);
+    this.favsService.deleteAlbumFromFavs(id);
   }
 }

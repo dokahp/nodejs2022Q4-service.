@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './model/track.model';
 import { v4 as uuidv4 } from 'uuid';
+import { FavsService } from 'src/favs/favs.service';
 
 @Injectable()
 export class TrackService {
   tracksMock: Track[] = [];
+
+  constructor(private readonly favsService: FavsService) {}
 
   async getAllTracks() {
     return this.tracksMock;
@@ -19,8 +22,6 @@ export class TrackService {
     const newTrack: Track = {
       id: uuidv4(),
       ...dto,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
     };
     this.tracksMock.push({ ...newTrack });
     return newTrack;
@@ -30,16 +31,16 @@ export class TrackService {
     const updatedTrack = {
       id,
       ...dto,
-      updatedAt: Date.now(),
     };
     this.tracksMock = this.tracksMock.map((track: Track) =>
-      track.id === id ? { ...track, ...updatedTrack } : track,
+      track.id === id ? { ...updatedTrack } : track,
     );
     return updatedTrack;
   }
 
   async deleteTrack(id: string) {
     this.tracksMock = this.tracksMock.filter((track: Track) => track.id !== id);
+    this.favsService.deleteTrackFromFavs(id);
   }
 
   async artistWasDeleted(id: string) {
