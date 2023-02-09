@@ -21,6 +21,8 @@ export class ArtistService {
       id: uuidv4(),
       name,
       grammy,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
     this.artistsMock.push(newArtist);
     return newArtist;
@@ -28,13 +30,14 @@ export class ArtistService {
 
   async updateArtist(id: string, dto: CreateArtistDto) {
     const { name, grammy } = dto;
-    const updatedArtist: Artist = {
+    const updatedArtist = {
       id,
       name,
       grammy,
+      updatedAt: Date.now(),
     };
     this.artistsMock = this.artistsMock.map((artist: Artist) =>
-      artist.id === id ? { ...updatedArtist } : artist,
+      artist.id === id ? { ...artist, ...updatedArtist } : artist,
     );
     return updatedArtist;
   }
