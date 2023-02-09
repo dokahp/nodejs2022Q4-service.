@@ -13,6 +13,7 @@ import {
 import { IdValidationPipe } from 'src/pipes/id-validation.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { User } from './model/user.model';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -26,7 +27,9 @@ export class UserController {
   }
 
   @Get(':id')
-  async getSingleUserById(@Param('id', IdValidationPipe) id: string) {
+  async getSingleUserById(
+    @Param('id', IdValidationPipe) id: string,
+  ): Promise<User> {
     const user = await this.userService.getSingleUserById(id);
     if (!user) {
       throw new HttpException('error: no such user', HttpStatus.NOT_FOUND);
@@ -35,7 +38,7 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() user: CreateUserDto) {
+  async createUser(@Body() user: CreateUserDto): Promise<User> {
     return this.userService.createUser(user);
   }
 
@@ -43,7 +46,7 @@ export class UserController {
   async updateUserPassword(
     @Param('id', IdValidationPipe) id: string,
     @Body() dto: UpdatePasswordDto,
-  ) {
+  ): Promise<User> {
     const user = await this.userService.getSingleUserById(id);
     if (!user) {
       throw new HttpException('error: no such user', HttpStatus.NOT_FOUND);
@@ -53,7 +56,7 @@ export class UserController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async deleteUser(@Param('id', IdValidationPipe) id: string) {
+  async deleteUser(@Param('id', IdValidationPipe) id: string): Promise<void> {
     const user = await this.userService.getSingleUserById(id);
     if (!user) {
       throw new HttpException('error: no such user', HttpStatus.NOT_FOUND);
