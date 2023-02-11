@@ -1,0 +1,40 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:15.1
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+    env_file:
+      - docker.env
+ 
+  pgadmin:
+    image: dpage/pgadmin4:6.18
+    networks:
+      - postgres
+    ports:
+      - "8080:80"
+    env_file:
+      - docker.env
+ 
+  nestjs-api:
+    build:
+      context: .
+      target: install-dependencies
+    command: npm run start:dev
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - postgres
+    networks:
+      - postgres
+ 
+networks:
+  postgres:
+    driver: bridge
