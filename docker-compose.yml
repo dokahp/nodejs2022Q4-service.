@@ -20,12 +20,12 @@ services:
     env_file:
       - docker.env
  
-  home-library:
-    image: home-library
+  nestjs-api:
+    image: nestjs-api
     env_file:
       - .env
     ports:
-      - "3000:3000"
+      - "4000:4000"
     depends_on:
       - postgres
     networks:
