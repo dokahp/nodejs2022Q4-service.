@@ -7,7 +7,7 @@ WORKDIR /user/src/app
 COPY package.json package-lock.json ./
 
 RUN npm ci --omit=dev
-
+RUN npm install @nestjs/cli
 COPY . .
 
 
@@ -33,5 +33,7 @@ WORKDIR /user/src/app
 COPY --from=install-dependencies /user/src/app/node_modules ./node_modules
 COPY --from=create-build /user/src/app/dist ./dist
 COPY package.json ./
+
+EXPOSE 3000
 
 CMD ["npm", "run", "start:prod"]
