@@ -1,5 +1,11 @@
 # Home Library Service
 
+## FOR Installing from Docker
+
+```
+docker-compose up --build -d
+```
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
