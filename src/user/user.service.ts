@@ -3,16 +3,20 @@ import { User } from './model/user.model';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
   usersMock: User[] = [];
 
+  constructor(private prisma: PrismaService) {}
+
   async getAllUsers() {
-    const allUsers: Omit<User, 'password'>[] = this.usersMock.map(
-      ({ password, ...user }: User) => Object.assign(user),
-    );
-    return allUsers;
+    // const allUsers: Omit<User, 'password'>[] = this.usersMock.map(
+    //   ({ password, ...user }: User) => Object.assign(user),
+    // );
+    // return allUsers;
+    return this.prisma.user.findMany();
   }
 
   async getSingleUserById(id: string): Promise<User> {

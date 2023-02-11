@@ -9,7 +9,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 RUN npm install @nestjs/cli
 COPY . .
-
+COPY ./prisma prisma
 
 # Creating a build:
 
