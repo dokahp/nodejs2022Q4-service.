@@ -17,7 +17,13 @@ export class UserService {
     // );
     // return allUsers;
     return this.prisma.user.findMany({
-      select: { login: true, version: true, createdAt: true, updatedAt: true },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
@@ -39,6 +45,13 @@ export class UserService {
     // return newUser;
     return await this.prisma.user.create({
       data: { login: user.login, password: user.password, version: 1 },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
