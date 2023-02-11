@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [],
   providers: [PrismaService],
   exports: [PrismaService],
 })
