@@ -1,14 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './model/user.model';
-import { v4 as uuidv4 } from 'uuid';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from './model/user.model';
 
 @Injectable()
 export class UserService {
-  usersMock: User[] = [];
-
   constructor(private prisma: PrismaService) {}
 
   async getAllUsers() {
@@ -24,7 +21,7 @@ export class UserService {
   }
 
   async getSingleUserById(id: string) {
-    return this.prisma.user.findUnique({ where: { id: id } });
+    return await this.prisma.user.findUnique({ where: { id: id } });
   }
 
   async createUser(user: CreateUserDto) {
@@ -33,31 +30,50 @@ export class UserService {
         login: user.login,
         password: user.password,
       },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
-    delete user.password;
-    return newUser;
+    const userWithTimeAsNumber: Omit<User, 'password'> = {
+      ...newUser,
+      createdAt: Date.parse(newUser.createdAt.toISOString()),
+      updatedAt: Date.parse(newUser.updatedAt.toISOString()),
+    };
+    return userWithTimeAsNumber;
   }
 
-  // async updateUserPassword(id: string, dto: UpdatePasswordDto): Promise<User> {
-  //   const existedUser = await this.getSingleUserById(id);
-  //   if (existedUser.password !== dto.oldPassword) {
-  //     throw new HttpException('password is wrong', HttpStatus.FORBIDDEN);
-  //   }
+  async updateUserPassword(id: string, dto: UpdatePasswordDto) {
+    const newUser = await this.prisma.user.update({
+      where: { id: id },
+      data: {
+        id: id,
+        password: dto.newPassword,
+        version: { increment: 1 },
+      },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
-  //   const newUserPassword: User = {
-  //     ...existedUser,
-  //     password: dto.newPassword,
-  //     version: ++existedUser.version,
-  //     updatedAt: Date.now(),
-  //   };
-  //   this.usersMock = this.usersMock.map((user: User) =>
-  //     user.id === id ? { ...newUserPassword } : user,
-  //   );
-  //   delete newUserPassword.password;
-  //   return newUserPassword;
-  // }
+    const userWithTimeAsNumber: Omit<User, 'password'> = {
+      ...newUser,
+      createdAt: Date.parse(newUser.createdAt.toISOString()),
+      updatedAt: Date.parse(newUser.updatedAt.toISOString()),
+    };
+    return userWithTimeAsNumber;
+  }
 
-  // async deleteUser(id: string): Promise<void> {
-  //   this.usersMock = this.usersMock.filter((user: User) => user.id !== id);
-  // }
+  async deleteUser(id: string) {
+    return await this.prisma.user.delete({
+      where: { id: id },
+    });
+  }
 }

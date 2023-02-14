@@ -11,7 +11,6 @@ export class TrackService {
   constructor(private readonly favsService: FavsService) {}
 
   async getAllTracks() {
-    console.log(this.tracksMock);
     return this.tracksMock;
   }
 
