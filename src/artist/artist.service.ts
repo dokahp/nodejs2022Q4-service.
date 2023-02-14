@@ -46,7 +46,7 @@ export class ArtistService {
     await this.prisma.artist.delete({
       where: { id: id },
     });
-    this.trackService.artistWasDeleted(id);
-    this.favsService.deleteArtistFromFavs(id);
+    // this.trackService.artistWasDeleted(id);
+    // this.favsService.deleteArtistFromFavs(id);
   }
 }

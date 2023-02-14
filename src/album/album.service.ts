@@ -49,7 +49,7 @@ export class AlbumService {
     await this.prisma.album.delete({
       where: { id: id },
     });
-    this.trackService.albumWasDeleted(id);
-    this.favsService.deleteAlbumFromFavs(id);
+    // this.trackService.albumWasDeleted(id);
+    // this.favsService.deleteAlbumFromFavs(id);
   }
 }
