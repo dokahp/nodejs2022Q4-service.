@@ -71,6 +71,6 @@ export class AlbumController {
     if (!album) {
       throw new HttpException('error: no such album', HttpStatus.NOT_FOUND);
     }
-    this.albumService.deleteAlbum(id);
+    return this.albumService.deleteAlbum(id);
   }
 }

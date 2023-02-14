@@ -1,56 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
-import { Album } from './model/album.model';
-import { v4 as uuidv4 } from 'uuid';
 import { TrackService } from 'src/track/track.service';
 import { FavsService } from 'src/favs/favs.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AlbumService {
-  albumMock: Album[] = [];
-
   constructor(
+    private readonly prisma: PrismaService,
     private readonly trackService: TrackService,
     private readonly favsService: FavsService,
   ) {}
 
   async getAllAlbums() {
-    return this.albumMock;
+    return await this.prisma.album.findMany();
   }
 
   async getAlbumById(id: string) {
-    return this.albumMock.find((album: Album) => album.id === id);
+    return this.prisma.album.findUnique({
+      where: { id: id },
+    });
   }
 
   async createAlbum(dto: CreateAlbumDto) {
     const { name, year, artistId } = dto;
-
-    const newAlbum: Album = {
-      id: uuidv4(),
-      name,
-      year,
-      artistId,
-    };
-    this.albumMock.push({ ...newAlbum });
-    return newAlbum;
+    return await this.prisma.album.create({
+      data: {
+        name,
+        year,
+        artistId,
+      },
+    });
   }
 
   async updateAlbum(id: string, dto: CreateAlbumDto) {
     const { name, year, artistId } = dto;
-    const updatedAlbum = {
-      id,
-      name,
-      year,
-      artistId,
-    };
-    this.albumMock = this.albumMock.map((album: Album) =>
-      album.id === id ? { ...updatedAlbum } : album,
-    );
-    return updatedAlbum;
+    return await this.prisma.album.update({
+      where: { id: id },
+      data: {
+        name,
+        year,
+        artistId,
+      },
+    });
   }
 
   async deleteAlbum(id: string) {
-    this.albumMock = this.albumMock.filter((album: Album) => album.id !== id);
+    await this.prisma.album.delete({
+      where: { id: id },
+    });
     this.trackService.albumWasDeleted(id);
     this.favsService.deleteAlbumFromFavs(id);
   }
