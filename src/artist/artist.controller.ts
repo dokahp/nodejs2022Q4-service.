@@ -56,6 +56,6 @@ export class ArtistController {
     if (!artist) {
       throw new HttpException('error: no such artist', HttpStatus.NOT_FOUND);
     }
-    this.artistService.deleteArtist(id);
+    return this.artistService.deleteArtist(id);
   }
 }

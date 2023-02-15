@@ -270,7 +270,7 @@
         }
       }
     },
-    "/users": {
+    "/user": {
       "get": {
         "tags": [
           "Users"
@@ -347,7 +347,7 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/user/{userId}": {
       "parameters": [
         {
           "name": "userId",
@@ -487,7 +487,7 @@
         }
       }
     },
-    "/tracks": {
+    "/track": {
       "get": {
         "tags": [
           "Track"
@@ -570,7 +570,7 @@
         }
       }
     },
-    "/tracks/{id}": {
+    "/track/{id}": {
       "parameters": [
         {
           "name": "id",
@@ -722,7 +722,7 @@
         }
       }
     },
-    "/albums": {
+    "/album": {
       "get": {
         "tags": [
           "Album"
@@ -802,7 +802,7 @@
         }
       }
     },
-    "/albums/{id}": {
+    "/album/{id}": {
       "parameters": [
         {
           "name": "id",
@@ -920,7 +920,7 @@
         }
       }
     },
-    "/artists": {
+    "/artist": {
       "get": {
         "tags": [
           "Artist"
@@ -994,7 +994,7 @@
         }
       }
     },
-    "/artists/{id}": {
+    "/artist/{id}": {
       "parameters": [
         {
           "name": "id",

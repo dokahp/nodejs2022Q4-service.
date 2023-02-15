@@ -1,58 +1,55 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { Track } from './model/track.model';
-import { v4 as uuidv4 } from 'uuid';
 import { FavsService } from 'src/favs/favs.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { FavouritesTypes } from 'src/favs/model/favorites.model';
 
 @Injectable()
 export class TrackService {
-  tracksMock: Track[] = [];
-
-  constructor(private readonly favsService: FavsService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly favsService: FavsService,
+  ) {}
 
   async getAllTracks() {
-    console.log(this.tracksMock);
-    return this.tracksMock;
+    return await this.prisma.track.findMany();
   }
 
   async getTrackById(id: string) {
-    return this.tracksMock.find((track: Track) => track.id === id);
+    return await this.prisma.track.findUnique({
+      where: { id: id },
+    });
   }
 
   async createTrack(dto: CreateTrackDto) {
-    const newTrack: Track = {
-      id: uuidv4(),
-      ...dto,
-    };
-    this.tracksMock.push({ ...newTrack });
-    return newTrack;
+    const { name, duration, albumId, artistId } = dto;
+    return await this.prisma.track.create({
+      data: {
+        name,
+        duration,
+        albumId,
+        artistId,
+      },
+    });
   }
 
   async updateTrack(id: string, dto: CreateTrackDto) {
-    const updatedTrack = {
-      id,
-      ...dto,
-    };
-    this.tracksMock = this.tracksMock.map((track: Track) =>
-      track.id === id ? { ...updatedTrack } : track,
-    );
-    return updatedTrack;
+    const { name, duration, albumId, artistId } = dto;
+    return await this.prisma.track.update({
+      where: { id: id },
+      data: {
+        name,
+        duration,
+        albumId,
+        artistId,
+      },
+    });
   }
 
   async deleteTrack(id: string) {
-    this.tracksMock = this.tracksMock.filter((track: Track) => track.id !== id);
-    this.favsService.deleteTrackFromFavs(id);
-  }
-
-  async artistWasDeleted(id: string) {
-    this.tracksMock = this.tracksMock.map((track: Track) =>
-      track.artistId === id ? { ...track, artistId: null } : track,
-    );
-  }
-
-  async albumWasDeleted(id: string) {
-    this.tracksMock = this.tracksMock.map((track: Track) =>
-      track.albumId === id ? { ...track, albumId: null } : track,
-    );
+    await this.prisma.track.delete({
+      where: { id: id },
+    });
+    this.favsService.deleteFromFavs(FavouritesTypes.tracks, id);
   }
 }

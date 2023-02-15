@@ -76,6 +76,6 @@ export class TrackController {
     if (!track) {
       throw new HttpException('error: no such track', HttpStatus.NOT_FOUND);
     }
-    this.trackService.deleteTrack(id);
+    return this.trackService.deleteTrack(id);
   }
 }

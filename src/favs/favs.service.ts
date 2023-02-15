@@ -1,61 +1,73 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from 'src/album/model/album.model';
-import { Artist } from 'src/artist/model/artist.model';
-import { Track } from 'src/track/model/track.model';
-import { Favorites } from './model/favorites.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Favorites, FavouritesTypes } from './model/favorites.model';
 
 @Injectable()
 export class FavsService {
-  favsMock: Favorites = {
-    artists: [],
-    albums: [],
-    tracks: [],
-  };
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllFavs() {
-    return this.favsMock;
+    const arrFavs: Favorites = await this.prisma.favourites.findFirst({
+      include: {
+        artists: true,
+        albums: true,
+        tracks: true,
+      },
+    });
+    if (!arrFavs) {
+      return {
+        artists: [],
+        tracks: [],
+        albums: [],
+      };
+    }
+    return arrFavs;
   }
 
-  async addTrackToFavs(track: Track) {
-    this.favsMock.tracks.push(track);
-    return track;
+  async addToFavs(type: FavouritesTypes, typeId: string) {
+    const checkRecord = await this.prisma.favourites.findFirst({});
+    if (!checkRecord) {
+      await this.prisma.favourites.create({ data: {} });
+    }
+    const record = await this.prisma.favourites.findFirst({});
+    return await this.prisma.favourites.update({
+      where: { id: record.id },
+      data: {
+        [type]: {
+          connect: {
+            id: typeId,
+          },
+        },
+      },
+      include: {
+        tracks: true,
+        albums: true,
+        artists: true,
+      },
+    });
   }
 
-  async findTrackInFavs(id: string) {
-    return this.favsMock.tracks.find((track: Track) => track.id === id);
+  async findInFavs(type: FavouritesTypes, id: string) {
+    return await this.prisma.favourites.findMany({
+      where: {
+        [type]: {
+          some: {
+            id,
+          },
+        },
+      },
+    });
   }
 
-  async deleteTrackFromFavs(id: string) {
-    this.favsMock.tracks = this.favsMock.tracks.filter(
-      (track: Track) => track.id !== id,
-    );
-  }
-
-  async addAlbumToFavs(album: Album) {
-    this.favsMock.albums.push(album);
-  }
-
-  async findAlbumInFavs(id: string) {
-    return this.favsMock.albums.find((album: Album) => album.id === id);
-  }
-
-  async deleteAlbumFromFavs(id: string) {
-    this.favsMock.albums = this.favsMock.albums.filter(
-      (album: Album) => album.id !== id,
-    );
-  }
-
-  async addArtistToFavs(artist: Artist) {
-    this.favsMock.artists.push(artist);
-  }
-
-  async findArtistInFavs(id: string) {
-    return this.favsMock.artists.find((artist: Artist) => artist.id === id);
-  }
-
-  async deleteArtistFromFavs(id: string) {
-    this.favsMock.artists = this.favsMock.artists.filter(
-      (artist: Artist) => artist.id !== id,
-    );
+  async deleteFromFavs(type: FavouritesTypes, id: string) {
+    await this.prisma.favourites.deleteMany({
+      where: {
+        [type]: {
+          some: {
+            id,
+          },
+        },
+      },
+    });
   }
 }
