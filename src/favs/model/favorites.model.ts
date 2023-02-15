@@ -7,3 +7,9 @@ export class Favorites {
   albums: Album[];
   tracks: Track[];
 }
+
+export enum FavouritesTypes {
+  artists = 'artists',
+  albums = 'albums',
+  tracks = 'tracks',
+}

@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
-import { TrackService } from 'src/track/track.service';
 import { FavsService } from 'src/favs/favs.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FavouritesTypes } from 'src/favs/model/favorites.model';
 
 @Injectable()
 export class AlbumService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly trackService: TrackService,
     private readonly favsService: FavsService,
   ) {}
 
@@ -49,7 +48,6 @@ export class AlbumService {
     await this.prisma.album.delete({
       where: { id: id },
     });
-    // this.trackService.albumWasDeleted(id);
-    // this.favsService.deleteAlbumFromFavs(id);
+    this.favsService.deleteFromFavs(FavouritesTypes.albums, id);
   }
 }

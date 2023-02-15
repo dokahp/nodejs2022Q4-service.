@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { Track } from './model/track.model';
-
 import { FavsService } from 'src/favs/favs.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FavouritesTypes } from 'src/favs/model/favorites.model';
 
 @Injectable()
 export class TrackService {
@@ -51,18 +50,6 @@ export class TrackService {
     await this.prisma.track.delete({
       where: { id: id },
     });
-    this.favsService.deleteTrackFromFavs(id);
+    this.favsService.deleteFromFavs(FavouritesTypes.tracks, id);
   }
-
-  // async artistWasDeleted(id: string) {
-  //   this.tracksMock = this.tracksMock.map((track: Track) =>
-  //     track.artistId === id ? { ...track, artistId: null } : track,
-  //   );
-  // }
-
-  // async albumWasDeleted(id: string) {
-  //   this.tracksMock = this.tracksMock.map((track: Track) =>
-  //     track.albumId === id ? { ...track, albumId: null } : track,
-  //   );
-  // }
 }

@@ -13,6 +13,7 @@ import { ArtistService } from 'src/artist/artist.service';
 import { IdValidationPipe } from 'src/pipes/id-validation.pipe';
 import { TrackService } from 'src/track/track.service';
 import { FavsService } from './favs.service';
+import { FavouritesTypes } from './model/favorites.model';
 
 @Controller('favs')
 export class FavsController {
@@ -37,20 +38,20 @@ export class FavsController {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    return this.favsService.addTrackToFavs(track);
+    return this.favsService.addToFavs(FavouritesTypes.tracks, id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('track/:id')
   async deleteTrackFromFavs(@Param('id', IdValidationPipe) id: string) {
-    const trackInFavs = this.favsService.findTrackInFavs(id);
+    const trackInFavs = this.favsService.findInFavs(FavouritesTypes.tracks, id);
     if (!trackInFavs) {
       throw new HttpException(
         'error: no such track in favorites',
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.favsService.deleteTrackFromFavs(id);
+    return this.favsService.deleteFromFavs(FavouritesTypes.tracks, id);
   }
 
   @Post('album/:id')
@@ -62,20 +63,20 @@ export class FavsController {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    return this.favsService.addAlbumToFavs(album);
+    return this.favsService.addToFavs(FavouritesTypes.albums, id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('album/:id')
   async deleteAlbumFromFavs(@Param('id', IdValidationPipe) id: string) {
-    const albumInFavs = this.favsService.findAlbumInFavs(id);
+    const albumInFavs = this.favsService.findInFavs(FavouritesTypes.albums, id);
     if (!albumInFavs) {
       throw new HttpException(
         'error: no such album in favorites',
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.favsService.deleteAlbumFromFavs(id);
+    return this.favsService.deleteFromFavs(FavouritesTypes.albums, id);
   }
 
   @Post('artist/:id')
@@ -87,19 +88,22 @@ export class FavsController {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    return this.favsService.addArtistToFavs(artist);
+    return this.favsService.addToFavs(FavouritesTypes.artists, id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('artist/:id')
   async deleteArtistFromFavs(@Param('id', IdValidationPipe) id: string) {
-    const artistInFavs = this.favsService.findArtistInFavs(id);
+    const artistInFavs = await this.favsService.findInFavs(
+      FavouritesTypes.artists,
+      id,
+    );
     if (!artistInFavs) {
       throw new HttpException(
         'error: no such artist in favorites',
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.favsService.deleteArtistFromFavs(id);
+    return this.favsService.deleteFromFavs(FavouritesTypes.artists, id);
   }
 }
